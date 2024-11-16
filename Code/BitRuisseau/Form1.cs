@@ -61,7 +61,11 @@ namespace BitRuisseau
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-
+            Image logo = Properties.Resources.bitruisseau_logo;
+            int x = 250;
+            int y = 10;
+            int width = logo.Width;
+            int height = logo.Height;
             Color colorLeft = Color.Blue;
             Color colorRight = Color.LightBlue;
 
@@ -70,6 +74,14 @@ namespace BitRuisseau
             {
                 e.Graphics.FillRectangle(brush, this.ClientRectangle);
             }
+            e.Graphics.DrawImage(logo, x, y, width, height);
+
+
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

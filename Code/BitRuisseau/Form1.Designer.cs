@@ -38,15 +38,16 @@
             panel2 = new Panel();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             panel1.SuspendLayout();
+            panel2.SuspendLayout();
             SuspendLayout();
             // 
             // dataGridView1
             // 
             dataGridView1.AllowUserToOrderColumns = true;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(0, 138);
+            dataGridView1.Location = new Point(0, 166);
             dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(158, 313);
+            dataGridView1.Size = new Size(158, 359);
             dataGridView1.TabIndex = 0;
             dataGridView1.CellContentClick += dataGridView1_CellContentClick;
             // 
@@ -63,6 +64,7 @@
             // label1
             // 
             label1.AutoSize = true;
+            label1.BackColor = Color.Transparent;
             label1.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label1.Location = new Point(20, 11);
             label1.Name = "label1";
@@ -82,26 +84,30 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label2.BackColor = Color.Transparent;
+            label2.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold);
+            label2.ForeColor = Color.Bisque;
             label2.Location = new Point(5, 47);
             label2.Name = "label2";
-            label2.Size = new Size(109, 16);
+            label2.Size = new Size(123, 16);
             label2.TabIndex = 2;
             label2.Text = "Partage commun";
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label4.BackColor = Color.Transparent;
+            label4.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold);
+            label4.ForeColor = Color.Bisque;
             label4.Location = new Point(46, 74);
             label4.Name = "label4";
-            label4.Size = new Size(68, 16);
+            label4.Size = new Size(77, 16);
             label4.TabIndex = 4;
             label4.Text = "Personnel";
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(12, 105);
+            textBox1.Location = new Point(12, 12);
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(134, 23);
             textBox1.TabIndex = 5;
@@ -109,17 +115,17 @@
             // panel2
             // 
             panel2.BackColor = SystemColors.ActiveCaption;
-            panel2.Location = new Point(1, 93);
+            panel2.Controls.Add(textBox1);
+            panel2.Location = new Point(0, 116);
             panel2.Name = "panel2";
-            panel2.Size = new Size(179, 358);
+            panel2.Size = new Size(193, 409);
             panel2.TabIndex = 6;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(textBox1);
+            ClientSize = new Size(1081, 524);
             Controls.Add(dataGridView1);
             Controls.Add(panel2);
             Controls.Add(label4);
@@ -132,6 +138,8 @@
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            panel2.ResumeLayout(false);
+            panel2.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
