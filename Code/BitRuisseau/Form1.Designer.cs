@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            dataGridView1 = new DataGridView();
             panel1 = new Panel();
             label1 = new Label();
             panel3 = new Panel();
@@ -36,20 +35,20 @@
             label4 = new Label();
             textBox1 = new TextBox();
             panel2 = new Panel();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            listBox1 = new ListBox();
+            backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            panel5 = new Panel();
+            panel4 = new Panel();
+            button1 = new Button();
+            label8 = new Label();
+            label3 = new Label();
+            pictureBox1 = new PictureBox();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
+            panel5.SuspendLayout();
+            panel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
-            // 
-            // dataGridView1
-            // 
-            dataGridView1.AllowUserToOrderColumns = true;
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(0, 166);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(158, 359);
-            dataGridView1.TabIndex = 0;
-            dataGridView1.CellContentClick += dataGridView1_CellContentClick;
             // 
             // panel1
             // 
@@ -109,24 +108,98 @@
             // 
             textBox1.Location = new Point(12, 12);
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(134, 23);
+            textBox1.Size = new Size(202, 23);
             textBox1.TabIndex = 5;
             // 
             // panel2
             // 
             panel2.BackColor = SystemColors.ActiveCaption;
+            panel2.Controls.Add(listBox1);
             panel2.Controls.Add(textBox1);
             panel2.Location = new Point(0, 116);
             panel2.Name = "panel2";
-            panel2.Size = new Size(193, 409);
+            panel2.Size = new Size(232, 409);
             panel2.TabIndex = 6;
+            panel2.Paint += panel2_Paint;
+            // 
+            // listBox1
+            // 
+            listBox1.FormattingEnabled = true;
+            listBox1.ItemHeight = 15;
+            listBox1.Location = new Point(1, 43);
+            listBox1.Name = "listBox1";
+            listBox1.Size = new Size(226, 364);
+            listBox1.TabIndex = 6;
+            listBox1.SelectedIndexChanged += listBox1_SelectedIndexChanged;
+            // 
+            // panel5
+            // 
+            panel5.Controls.Add(panel4);
+            panel5.Controls.Add(label8);
+            panel5.Controls.Add(label3);
+            panel5.Location = new Point(494, 175);
+            panel5.Name = "panel5";
+            panel5.Size = new Size(310, 207);
+            panel5.TabIndex = 7;
+            // 
+            // panel4
+            // 
+            panel4.Controls.Add(pictureBox1);
+            panel4.Controls.Add(button1);
+            panel4.Location = new Point(41, 121);
+            panel4.Name = "panel4";
+            panel4.Size = new Size(229, 80);
+            panel4.TabIndex = 3;
+            // 
+            // button1
+            // 
+            button1.Font = new Font("Segoe UI", 11F);
+            button1.Location = new Point(78, 7);
+            button1.Name = "button1";
+            button1.Size = new Size(148, 66);
+            button1.TabIndex = 2;
+            button1.Text = "Localiser";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label8.Location = new Point(58, 48);
+            label8.Name = "label8";
+            label8.Size = new Size(199, 54);
+            label8.TabIndex = 1;
+            label8.Text = "Localiser votre dossier qui \r\ncontient vos fichier que vous \r\nvoulez mettre a disposition";
+            label8.Click += label5_Click;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label3.Location = new Point(70, 11);
+            label3.Name = "label3";
+            label3.Size = new Size(168, 25);
+            label3.TabIndex = 0;
+            label3.Text = "Dossier de Médias";
+            label3.Click += label3_Click;
+            // 
+            // pictureBox1
+            // 
+            pictureBox1.Image = Properties.Resources.Folder;
+            pictureBox1.Location = new Point(12, 13);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(60, 50);
+            pictureBox1.TabIndex = 8;
+            pictureBox1.TabStop = false;
+            pictureBox1.Click += pictureBox1_Click_1;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1081, 524);
-            Controls.Add(dataGridView1);
+            Controls.Add(panel5);
             Controls.Add(panel2);
             Controls.Add(label4);
             Controls.Add(label2);
@@ -135,18 +208,19 @@
             Text = "Form1";
             Load += Form1_Load;
             Paint += Form1_Paint;
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
+            panel5.ResumeLayout(false);
+            panel5.PerformLayout();
+            panel4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-
-        private DataGridView dataGridView1;
         private Panel panel1;
         private Label label1;
         private Label label2;
@@ -154,5 +228,13 @@
         private TextBox textBox1;
         private Panel panel2;
         private Panel panel3;
+        private ListBox listBox1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private Panel panel5;
+        private Label label3;
+        private Label label8;
+        private Button button1;
+        private Panel panel4;
+        private PictureBox pictureBox1;
     }
 }
