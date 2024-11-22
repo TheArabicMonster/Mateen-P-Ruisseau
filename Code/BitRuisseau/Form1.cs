@@ -1,3 +1,5 @@
+using MQTTnet;
+using MQTTnet.Client;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
 
@@ -6,6 +8,9 @@ namespace BitRuisseau
     public partial class Form1 : Form
     {
         private FileSystemWatcher fileWatcher;
+        
+
+
         public Form1()
         {
             InitializeComponent();
@@ -171,7 +176,6 @@ namespace BitRuisseau
                 EnableRaisingEvents = true // Active la surveillance
             };
 
-            // Abonne-toi aux événements
             fileWatcher.Created += (s, e) => OnFolderChanged(folderPath);
             fileWatcher.Deleted += (s, e) => OnFolderChanged(folderPath);
             fileWatcher.Renamed += (s, e) => OnFolderChanged(folderPath);

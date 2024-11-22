@@ -39,10 +39,10 @@
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             panel5 = new Panel();
             panel4 = new Panel();
+            pictureBox1 = new PictureBox();
             button1 = new Button();
             label8 = new Label();
             label3 = new Label();
-            pictureBox1 = new PictureBox();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             panel5.SuspendLayout();
@@ -151,6 +151,16 @@
             panel4.Size = new Size(229, 80);
             panel4.TabIndex = 3;
             // 
+            // pictureBox1
+            // 
+            pictureBox1.Image = Properties.Resources.Folder;
+            pictureBox1.Location = new Point(12, 13);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(60, 50);
+            pictureBox1.TabIndex = 8;
+            pictureBox1.TabStop = false;
+            pictureBox1.Click += pictureBox1_Click_1;
+            // 
             // button1
             // 
             button1.Font = new Font("Segoe UI", 11F);
@@ -183,16 +193,6 @@
             label3.TabIndex = 0;
             label3.Text = "Dossier de Médias";
             label3.Click += label3_Click;
-            // 
-            // pictureBox1
-            // 
-            pictureBox1.Image = Properties.Resources.Folder;
-            pictureBox1.Location = new Point(12, 13);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(60, 50);
-            pictureBox1.TabIndex = 8;
-            pictureBox1.TabStop = false;
-            pictureBox1.Click += pictureBox1_Click_1;
             // 
             // Form1
             // 
