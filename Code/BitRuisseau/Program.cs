@@ -4,11 +4,15 @@ using System.Text;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Protocol;
+using Newtonsoft.Json;
 
 namespace BitRuisseau
 {
     internal static class Program
     {
+        private static IMqttClient mqttClient;
+        public static string selectedFolderPath;
+
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -19,60 +23,97 @@ namespace BitRuisseau
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            string broker = "inf-n510-p301";
+            string broker = "blue.section-inf.ch";
             int port = 1883;
-            string clientId = Guid.NewGuid().ToString();
+            string clientId = "mateen";
             string topic = "test";
             string username = "ict";
             string password = "321";
 
             var factory = new MqttFactory();
-            var mqttClient = factory.CreateMqttClient();
+            mqttClient = factory.CreateMqttClient();
             var options = new MqttClientOptionsBuilder()
+                .WithTcpServer(broker, port) // MQTT broker address and port
+                .WithCredentials(username, password) // Set username and password
+                .WithClientId(clientId)
+                .WithCleanSession()
+                .Build();
 
-            .WithTcpServer(broker, port) // MQTT broker address and port
-            .WithCredentials(username, password) // Set username and password
-            .WithClientId(clientId)
-            .WithCleanSession()
-            .WithTls(
-                o =>
+            try
+            {
+                // Connect to MQTT broker
+                var connectResult = await mqttClient.ConnectAsync(options);
+
+                if (connectResult.ResultCode == MqttClientConnectResultCode.Success)
                 {
-                    //// The used public broker sometimes has invalid certificates. This sample accepts all
-                    //// certificates. This should not be used in live environments.
-                    //o.CertificateValidationHandler = _ => true;
+                    Console.WriteLine("Connected to MQTT broker successfully.");
 
-                    //// The default value is determined by the OS. Set manually to force version.
-                    //o.SslProtocol = SslProtocols.Tls12;
+                    // Subscribe to a topic
+                    await mqttClient.SubscribeAsync(topic);
 
-                    //// Please provide the file path of your certificate file. The current directory is /bin.
-                    //var certificate = new X509Certificate("/opt/emqxsl-ca.crt", "");
-                    //o.Certificates = new List<X509Certificate> { certificate };
+                    // Callback function when a message is received
+                    mqttClient.ApplicationMessageReceivedAsync += e =>
+                    {
+                        try
+                        {
+                            string message = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
+                            Console.WriteLine($"Received message: {message}");
+
+                            if (message.StartsWith("hello"))
+                            {
+                                SendMusicList(topic);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error processing received message: {ex.Message}");
+                        }
+
+                        return Task.CompletedTask;
+                    };
+
+                    Application.Run(new Form1());
                 }
-            )
-            .Build();
-
-            // Connect to MQTT broker
-            var connectResult = await mqttClient.ConnectAsync(options);
-
-            if (connectResult.ResultCode == MqttClientConnectResultCode.Success)
-            {
-                Console.WriteLine("Connected to MQTT broker successfully.");
-
-                // Subscribe to a topic
-                await mqttClient.SubscribeAsync(topic);
-
-                // Callback function when a message is received
-                mqttClient.ApplicationMessageReceivedAsync += e =>
+                else
                 {
-                    Console.WriteLine($"Received message: {Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment)}");
-                    return Task.CompletedTask;
-                };
+                    Console.WriteLine($"Failed to connect to MQTT broker: {connectResult.ResultCode}");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine($"Failed to connect to MQTT broker: {connectResult.ResultCode}");
+                Console.WriteLine($"Error connecting to MQTT broker: {ex.Message}");
             }
-            Application.Run(new Form1());
+        }
+
+        private static void SendMusicList(string topic)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(selectedFolderPath) && Directory.Exists(selectedFolderPath))
+                {
+                    string[] mp3Files = Directory.GetFiles(selectedFolderPath, "*.mp3");
+                    string[] mp4Files = Directory.GetFiles(selectedFolderPath, "*.mp4");
+
+                    var musicFiles = mp3Files.Concat(mp4Files).Select(Path.GetFileName).ToList();
+                    string json = JsonConvert.SerializeObject(musicFiles);
+
+                    var message = new MqttApplicationMessageBuilder()
+                        .WithTopic(topic)
+                        .WithPayload(json)
+                        .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+                        .Build();
+
+                    mqttClient.PublishAsync(message);
+                }
+                else
+                {
+                    Console.WriteLine("No folder selected or folder does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending music list: {ex.Message}");
+            }
         }
     }
 }

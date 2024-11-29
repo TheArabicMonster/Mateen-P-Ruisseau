@@ -43,6 +43,8 @@
             button1 = new Button();
             label8 = new Label();
             label3 = new Label();
+            radioButton1 = new RadioButton();
+            radioButton2 = new RadioButton();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             panel5.SuspendLayout();
@@ -194,11 +196,35 @@
             label3.Text = "Dossier de Médias";
             label3.Click += label3_Click;
             // 
+            // radioButton1
+            // 
+            radioButton1.AutoSize = true;
+            radioButton1.BackColor = Color.Transparent;
+            radioButton1.Location = new Point(134, 46);
+            radioButton1.Name = "radioButton1";
+            radioButton1.Size = new Size(14, 13);
+            radioButton1.TabIndex = 8;
+            radioButton1.TabStop = true;
+            radioButton1.UseVisualStyleBackColor = false;
+            // 
+            // radioButton2
+            // 
+            radioButton2.AutoSize = true;
+            radioButton2.BackColor = Color.Transparent;
+            radioButton2.Location = new Point(134, 76);
+            radioButton2.Name = "radioButton2";
+            radioButton2.Size = new Size(14, 13);
+            radioButton2.TabIndex = 9;
+            radioButton2.TabStop = true;
+            radioButton2.UseVisualStyleBackColor = false;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1081, 524);
+            Controls.Add(radioButton2);
+            Controls.Add(radioButton1);
             Controls.Add(panel5);
             Controls.Add(panel2);
             Controls.Add(label4);
@@ -236,5 +262,7 @@
         private Button button1;
         private Panel panel4;
         private PictureBox pictureBox1;
+        private RadioButton radioButton1;
+        private RadioButton radioButton2;
     }
 }

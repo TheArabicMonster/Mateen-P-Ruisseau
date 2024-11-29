@@ -2,14 +2,15 @@ using MQTTnet;
 using MQTTnet.Client;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace BitRuisseau
 {
     public partial class Form1 : Form
     {
         private FileSystemWatcher fileWatcher;
-        
-
 
         public Form1()
         {
@@ -113,24 +114,27 @@ namespace BitRuisseau
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // Crée et configure le FolderBrowserDialog
-            using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+            try
             {
-                folderDialog.Description = "Veuillez sélectionner un dossier.";
-                folderDialog.ShowNewFolderButton = true; // Permet la création de nouveaux dossiers
-                folderDialog.RootFolder = Environment.SpecialFolder.Desktop; // Dossier initial
+                // Code simplifiÃ© pour tester uniquement le FolderBrowserDialog
+                FolderBrowserDialog folderDialog = new FolderBrowserDialog();
+                DialogResult result = folderDialog.ShowDialog();
 
-                // Affiche le dialogue et vérifie si l'utilisateur a cliqué sur OK
-                if (folderDialog.ShowDialog() == DialogResult.OK)
+                if (result == DialogResult.OK)
                 {
-                    string selectedPath = folderDialog.SelectedPath; // Chemin du dossier sélectionné
-                    MessageBox.Show($"Dossier sélectionné : {selectedPath}", "Dossier choisi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                    DisplayMedia(selectedPath);
-                    WatchFolder(selectedPath);
+                    MessageBox.Show("Dossier sÃ©lectionnÃ© : " + folderDialog.SelectedPath);
+                }
+                else
+                {
+                    MessageBox.Show("Aucun dossier sÃ©lectionnÃ©.");
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur : " + ex.Message);
+            }
         }
+
         private void DisplayMedia(string folderPath)
         {
             if (Directory.Exists(folderPath))
@@ -146,27 +150,22 @@ namespace BitRuisseau
 
                 Debug.Write(mediaFiles);
 
-                foreach (string file in mediaFiles) { listBox1.Items.Add(Path.GetFileName(file)); }
-            }
-            else { MessageBox.Show("Le dossier spécifié n'existe pas.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-
-        }
-        private void OnFolderChanged(string folderPath)
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new Action(() => DisplayMedia(folderPath)));
+                foreach (string file in mediaFiles)
+                {
+                    listBox1.Items.Add(Path.GetFileName(file));
+                }
             }
             else
             {
-                DisplayMedia(folderPath);
+                MessageBox.Show("Le dossier spÃ©cifiÃ© n'existe pas.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void WatchFolder(string folderPath)
         {
             if (fileWatcher != null)
             {
-                fileWatcher.Dispose(); // Arrête la surveillance précédente si elle existait
+                fileWatcher.Dispose(); // ArrÃªte la surveillance prÃ©cÃ©dente si elle existait
             }
 
             fileWatcher = new FileSystemWatcher(folderPath)
@@ -180,6 +179,19 @@ namespace BitRuisseau
             fileWatcher.Deleted += (s, e) => OnFolderChanged(folderPath);
             fileWatcher.Renamed += (s, e) => OnFolderChanged(folderPath);
         }
+
+        private void OnFolderChanged(string folderPath)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => DisplayMedia(folderPath)));
+            }
+            else
+            {
+                DisplayMedia(folderPath);
+            }
+        }
+
         private void pictureBox1_Click_1(object sender, EventArgs e)
         {
 
