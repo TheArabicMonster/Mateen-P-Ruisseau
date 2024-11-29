@@ -45,11 +45,13 @@
             label3 = new Label();
             radioButton1 = new RadioButton();
             radioButton2 = new RadioButton();
+            pictureBox2 = new PictureBox();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             panel5.SuspendLayout();
             panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             SuspendLayout();
             // 
             // panel1
@@ -118,9 +120,9 @@
             panel2.BackColor = SystemColors.ActiveCaption;
             panel2.Controls.Add(listBox1);
             panel2.Controls.Add(textBox1);
-            panel2.Location = new Point(0, 116);
+            panel2.Location = new Point(0, 127);
             panel2.Name = "panel2";
-            panel2.Size = new Size(232, 409);
+            panel2.Size = new Size(232, 398);
             panel2.TabIndex = 6;
             panel2.Paint += panel2_Paint;
             // 
@@ -218,11 +220,24 @@
             radioButton2.TabStop = true;
             radioButton2.UseVisualStyleBackColor = false;
             // 
+            // pictureBox2
+            // 
+            pictureBox2.BackColor = Color.Transparent;
+            pictureBox2.Image = Properties.Resources.broker_config;
+            pictureBox2.Location = new Point(159, 12);
+            pictureBox2.Name = "pictureBox2";
+            pictureBox2.Size = new Size(68, 83);
+            pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox2.TabIndex = 9;
+            pictureBox2.TabStop = false;
+            pictureBox2.Click += pictureBox2_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1081, 524);
+            Controls.Add(pictureBox2);
             Controls.Add(radioButton2);
             Controls.Add(radioButton1);
             Controls.Add(panel5);
@@ -242,6 +257,7 @@
             panel5.PerformLayout();
             panel4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -264,5 +280,6 @@
         private PictureBox pictureBox1;
         private RadioButton radioButton1;
         private RadioButton radioButton2;
+        private PictureBox pictureBox2;
     }
 }

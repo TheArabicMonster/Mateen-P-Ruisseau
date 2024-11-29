@@ -8,7 +8,8 @@ using Newtonsoft.Json;
 
 namespace BitRuisseau
 {
-    internal static class Program
+
+    public static class Program
     {
         private static IMqttClient mqttClient;
         public static string selectedFolderPath;

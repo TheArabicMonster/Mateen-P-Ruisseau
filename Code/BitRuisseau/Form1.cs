@@ -114,24 +114,28 @@ namespace BitRuisseau
 
         private void button1_Click(object sender, EventArgs e)
         {
-            try
-            {
-                // Code simplifié pour tester uniquement le FolderBrowserDialog
-                FolderBrowserDialog folderDialog = new FolderBrowserDialog();
-                DialogResult result = folderDialog.ShowDialog();
+            Debug.WriteLine("Button clicked!");
 
-                if (result == DialogResult.OK)
+            // Crée et configure le FolderBrowserDialog
+            using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+            {
+                folderDialog.Description = "Veuillez sélectionner un dossier.";
+                folderDialog.ShowNewFolderButton = true; // Permet la création de nouveaux dossiers
+
+                // Affiche le dialogue et vérifie si l'utilisateur a cliqué sur OK
+                if (folderDialog.ShowDialog() == DialogResult.OK)
                 {
-                    MessageBox.Show("Dossier sélectionné : " + folderDialog.SelectedPath);
+                    string selectedPath = folderDialog.SelectedPath; // Chemin du dossier sélectionné
+                    MessageBox.Show($"Dossier sélectionné : {selectedPath}", "Dossier choisi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    Program.selectedFolderPath = selectedPath; // Met à jour le chemin du dossier sélectionné
+                    DisplayMedia(selectedPath);
+                    WatchFolder(selectedPath);
                 }
                 else
                 {
-                    MessageBox.Show("Aucun dossier sélectionné.");
+                    Debug.WriteLine("Folder selection was canceled.");
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Erreur : " + ex.Message);
             }
         }
 
@@ -200,6 +204,11 @@ namespace BitRuisseau
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            Debug.WriteLine("boutton config broker cliquer");
         }
     }
 }
