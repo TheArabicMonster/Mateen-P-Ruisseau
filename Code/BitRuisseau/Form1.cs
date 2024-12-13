@@ -22,13 +22,9 @@ namespace BitRuisseau
         public static string selectedFolderPath;
         string broker = "blue.section-inf.ch";
         int port = 1883;
-        string clientId = "mateen";
         string topic = "test";
         string username = "ict";
         string password = "321";
-
-
-
 
         public Form1()
         {
@@ -43,10 +39,9 @@ namespace BitRuisseau
             var options = new MqttClientOptionsBuilder()
                 .WithTcpServer(broker, port) // MQTT broker address and port
                 .WithCredentials(username, password) // Set username and password
-                .WithClientId(clientId)
+                .WithClientId(Guid.NewGuid().ToString()) // Unique client ID
                 .WithCleanSession()
                 .Build();
-
             try
             {
                 // Connect to MQTT broker
@@ -56,42 +51,83 @@ namespace BitRuisseau
                 {
                     Console.WriteLine("Connected to MQTT broker successfully.");
 
-                    // Subscribe to a topic
-                    mqttClient.SubscribeAsync(topic).Wait();
-
                     // Callback function when a message is received
-                    mqttClient.ApplicationMessageReceivedAsync += e =>
+                    mqttClient.ApplicationMessageReceivedAsync += async e =>
                     {
+                        Console.WriteLine(Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
                         try
                         {
-                            string message = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
+                            string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
                             Console.WriteLine($"Received message: {message}");
 
-                            if (message.StartsWith("hello"))
+                            // Process the message as needed
+                            if (message.Contains("HELLO"))
                             {
-                                SendMusicList(topic);
+                                // Get the music list to send
+                                string musicList = GetMusicList();
+
+                                // Construct the response message
+                                string response = $"{Guid.NewGuid()} (Mateen) possède les musiques suivantes :\n{musicList}";
+
+                                // Ensure the client is connected
+                                if (mqttClient == null || !mqttClient.IsConnected)
+                                {
+                                    Console.WriteLine("Client not connected. Reconnecting...");
+                                    await mqttClient.ConnectAsync(options);
+                                }
+
+                                // Create and send the response message
+                                var responseMessage = new MqttApplicationMessageBuilder()
+                                    .WithTopic(topic)
+                                    .WithPayload(response)
+                                    .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+                                    .WithRetainFlag(false)
+                                    .Build();
+
+                                await mqttClient.PublishAsync(responseMessage);
+                                Console.WriteLine("Message sent successfully!");
                             }
                         }
                         catch (Exception ex)
                         {
                             Console.WriteLine($"Error processing received message: {ex.Message}");
                         }
-
-                        return Task.CompletedTask;
                     };
 
-                    Application.Run(new Form1());
+                    // Subscribe to a topic
+                    var subscribeOptions = new MqttClientSubscribeOptionsBuilder()
+                        .WithTopicFilter(f => f.WithTopic(topic).WithNoLocal(true))
+                        .Build();
+                    mqttClient.SubscribeAsync(subscribeOptions).Wait();
                 }
                 else
                 {
                     Console.WriteLine($"Failed to connect to MQTT broker: {connectResult.ResultCode}");
                 }
+               
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error connecting to MQTT broker: {ex.Message}");
             }
         }
+
+        private string GetMusicList()
+        {
+            if (!string.IsNullOrEmpty(selectedFolderPath) && Directory.Exists(selectedFolderPath))
+            {
+                string[] mp3Files = Directory.GetFiles(selectedFolderPath, "*.mp3");
+                string[] mp4Files = Directory.GetFiles(selectedFolderPath, "*.mp4");
+
+                var musicFiles = mp3Files.Concat(mp4Files).Select(Path.GetFileName).ToList();
+                return JsonConvert.SerializeObject(musicFiles);
+            }
+            else
+            {
+                return "No folder selected or folder does not exist.";
+            }
+        }
+
         private static void SendMusicList(string topic)
         {
             try
@@ -121,25 +157,6 @@ namespace BitRuisseau
             {
                 Console.WriteLine($"Error sending music list: {ex.Message}");
             }
-        }
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void panel1_Paint_1(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void panel3_Paint(object sender, PaintEventArgs e)
@@ -183,32 +200,6 @@ namespace BitRuisseau
             }
             e.Graphics.DrawImage(logo, x, y, width, height);
 
-
-        }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void panel2_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label5_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label5_Click_1(object sender, EventArgs e)
-        {
-
         }
         private void button1_Click(object sender, EventArgs e)
         {
@@ -234,7 +225,6 @@ namespace BitRuisseau
             {
                 Debug.WriteLine("Folder selection was canceled.");
             }
-
         }
 
         private void DisplayMedia(string folderPath)

@@ -65,7 +65,6 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(158, 44);
             panel1.TabIndex = 1;
-            panel1.Paint += panel1_Paint_1;
             // 
             // label1
             // 
@@ -77,7 +76,6 @@
             label1.Size = new Size(118, 20);
             label1.TabIndex = 2;
             label1.Text = "Liste de fichiers";
-            label1.Click += label1_Click;
             // 
             // panel3
             // 
@@ -127,7 +125,6 @@
             panel2.Name = "panel2";
             panel2.Size = new Size(232, 398);
             panel2.TabIndex = 6;
-            panel2.Paint += panel2_Paint;
             // 
             // listBox1
             // 
@@ -187,7 +184,6 @@
             label8.Size = new Size(199, 54);
             label8.TabIndex = 1;
             label8.Text = "Localiser votre dossier qui \r\ncontient vos fichier que vous \r\nvoulez mettre a disposition";
-            label8.Click += label5_Click;
             // 
             // label3
             // 
@@ -198,7 +194,6 @@
             label3.Size = new Size(168, 25);
             label3.TabIndex = 0;
             label3.Text = "Dossier de Médias";
-            label3.Click += label3_Click;
             // 
             // radioButton1
             // 
