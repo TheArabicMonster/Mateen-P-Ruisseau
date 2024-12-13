@@ -46,6 +46,9 @@
             radioButton1 = new RadioButton();
             radioButton2 = new RadioButton();
             pictureBox2 = new PictureBox();
+            folderBrowserDialog1 = new FolderBrowserDialog();
+            colorDialog1 = new ColorDialog();
+            openFileDialog1 = new OpenFileDialog();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             panel5.SuspendLayout();
@@ -163,7 +166,6 @@
             pictureBox1.Size = new Size(60, 50);
             pictureBox1.TabIndex = 8;
             pictureBox1.TabStop = false;
-            pictureBox1.Click += pictureBox1_Click_1;
             // 
             // button1
             // 
@@ -232,6 +234,14 @@
             pictureBox2.TabStop = false;
             pictureBox2.Click += pictureBox2_Click;
             // 
+            // folderBrowserDialog1
+            // 
+            folderBrowserDialog1.HelpRequest += folderBrowserDialog1_HelpRequest;
+            // 
+            // openFileDialog1
+            // 
+            openFileDialog1.FileName = "openFileDialog1";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -281,5 +291,8 @@
         private RadioButton radioButton1;
         private RadioButton radioButton2;
         private PictureBox pictureBox2;
+        private FolderBrowserDialog folderBrowserDialog1;
+        private ColorDialog colorDialog1;
+        private OpenFileDialog openFileDialog1;
     }
 }
