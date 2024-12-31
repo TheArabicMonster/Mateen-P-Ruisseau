@@ -83,7 +83,6 @@
             panel3.Name = "panel3";
             panel3.Size = new Size(891, 504);
             panel3.TabIndex = 7;
-            panel3.Paint += panel3_Paint;
             // 
             // label2
             // 
@@ -253,7 +252,6 @@
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;
-            Paint += Form1_Paint;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             panel2.ResumeLayout(false);
