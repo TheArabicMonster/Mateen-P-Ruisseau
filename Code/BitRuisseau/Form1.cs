@@ -1,7 +1,5 @@
 using MQTTnet;
-using MQTTnet.Client;
 using MQTTnet.Protocol;
-using MQTTnet.Server;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
@@ -26,7 +24,7 @@ namespace BitRuisseau
         public Form1()
         {
             InitializeComponent();
-            mqttHandler = new MqttHandler(broker, port, username, password, topic);
+            mqttHandler = new MqttHandler(broker, port, username, password, topic, selectedFolderPath);
         }
 
         private async void Form1_Load(object sender, EventArgs e)
@@ -50,7 +48,7 @@ namespace BitRuisseau
                 WatchFolder(selectedPath);
 
                 // Envoyer le catalogue
-                await mqttHandler.SendCatalogAsync(selectedPath);
+                await mqttHandler.SendMessageAsync(MessageType.ENVOIE_CATALOGUE, MqttHandler.GetMusicList(selectedFolderPath));
             }
             else
             {
@@ -140,7 +138,7 @@ namespace BitRuisseau
                 username = configBroker.Username;
                 password = configBroker.Password;
 
-                mqttHandler = new MqttHandler(broker, port, username, password, topic);
+                mqttHandler = new MqttHandler(broker, port, username, password, topic, selectedFolderPath);
                 mqttHandler.ConnectAsync();
             }
         }
@@ -148,6 +146,19 @@ namespace BitRuisseau
         private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e)
         {
 
+        }
+
+        private async void button2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                await mqttHandler.SendMessageAsync(MessageType.DEMANDE_CATALOGUE);
+                MessageBox.Show("Demande de catalogue envoyée avec succès.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de l'envoi de la demande de catalogue : {ex.Message}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

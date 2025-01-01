@@ -49,6 +49,7 @@
             folderBrowserDialog1 = new FolderBrowserDialog();
             colorDialog1 = new ColorDialog();
             openFileDialog1 = new OpenFileDialog();
+            button2 = new Button();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             panel5.SuspendLayout();
@@ -165,7 +166,7 @@
             // 
             // button1
             // 
-            button1.Font = new Font("Segoe UI", 11F);
+            button1.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             button1.Location = new Point(78, 7);
             button1.Name = "button1";
             button1.Size = new Size(148, 66);
@@ -236,11 +237,23 @@
             // 
             openFileDialog1.FileName = "openFileDialog1";
             // 
+            // button2
+            // 
+            button2.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            button2.Location = new Point(592, 401);
+            button2.Name = "button2";
+            button2.Size = new Size(123, 56);
+            button2.TabIndex = 10;
+            button2.Text = "demande catalogue";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1081, 524);
+            Controls.Add(button2);
             Controls.Add(pictureBox2);
             Controls.Add(radioButton2);
             Controls.Add(radioButton1);
@@ -287,5 +300,6 @@
         private FolderBrowserDialog folderBrowserDialog1;
         private ColorDialog colorDialog1;
         private OpenFileDialog openFileDialog1;
+        private Button button2;
     }
 }
