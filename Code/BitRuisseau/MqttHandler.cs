@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
 
 namespace BitRuisseau
 {
@@ -17,15 +16,13 @@ namespace BitRuisseau
         private MqttClientOptions options;
         private string topic;
         private string selectedFolderPath;
-        private string senderID;
 
-        public MqttHandler(string broker, int port, string username, string password, string topic, string selectedFolderPath,string _senderId)
+        public MqttHandler(string broker, int port, string username, string password, string topic, string selectedFolderPath)
         {
             var factory = new MqttClientFactory();
             mqttClient = factory.CreateMqttClient();
             this.topic = topic;
             this.selectedFolderPath = selectedFolderPath;
-            senderID = _senderId;
 
             options = new MqttClientOptionsBuilder()
                 .WithTcpServer(broker, port)
@@ -50,7 +47,7 @@ namespace BitRuisseau
                         .Build());
 
                     // Envoyer un message de type 1 (DEMANDE_CATALOGUE)
-                    await SendMessageAsync();
+                    await SendMessageAsync(MessageType.DEMANDE_CATALOGUE);
                 }
                 else
                 {
@@ -78,7 +75,7 @@ namespace BitRuisseau
                 {
                     case MessageType.ENVOIE_CATALOGUE:
                         Console.WriteLine("Catalogue reçu.");
-                        //await SendMessageAsync(MessageType.ENVOIE_CATALOGUE, GetMusicList(selectedFolderPath));
+                        await SendMessageAsync(MessageType.ENVOIE_CATALOGUE, GetMusicList(selectedFolderPath));
                         break;
 
                     case MessageType.ENVOIE_FICHIER:
@@ -87,12 +84,8 @@ namespace BitRuisseau
                         break;
 
                     case MessageType.DEMANDE_CATALOGUE:
-                        FileSerelizer fileSerelizer = new FileSerelizer();
-                        List<FileInfo> files = GetMusicList(this.selectedFolderPath);
-                        GenericEnvelope envelop = new GenericEnvelope(MessageType.ENVOIE_CATALOGUE,senderID);
-                        string payload = fileSerelizer.SerelizeCatalog(fileSerelizer.SerelizeFilesToTagLibFiles(files),envelop);
                         Console.WriteLine("Demande de catalogue reçue.");
-                        await SendMessageAsync();
+                        await SendMessageAsync(MessageType.ENVOIE_CATALOGUE);
                         break;
 
                     case MessageType.DEMANDE_FICHIER:
@@ -141,7 +134,7 @@ namespace BitRuisseau
 
                 // Sauvegarder le fichier reçu
                 string filePath = Path.Combine(selectedFolderPath, fileEnvelope.FileName);
-                System.IO.File.WriteAllBytes(filePath, fileBytes);
+                File.WriteAllBytes(filePath, fileBytes);
                 Console.WriteLine($"Fichier {fileEnvelope.FileName} reçu et sauvegardé.");
             }
             catch (Exception ex)
@@ -167,38 +160,42 @@ namespace BitRuisseau
         }
 
         // Obtenir la liste des fichiers du catalogue
-        public static List<FileInfo> GetMusicList(string selectedFolderPath)
+        public static string GetMusicList(string selectedFolderPath)
         {
-            List<FileInfo> files = new List<FileInfo>();
-            DirectoryInfo folder = new DirectoryInfo(selectedFolderPath);
-            if (folder.Exists)
-            {
-                files = folder.GetFiles().ToList();
-            }
+            var files = Directory.GetFiles(selectedFolderPath, "*.*", SearchOption.AllDirectories)
+                .Where(s => s.EndsWith(".mp3") || s.EndsWith(".mp4"))
+                .Select(Path.GetFileName)
+                .ToList();
 
-            return files;
+            return JsonConvert.SerializeObject(files);
         }
 
         // Envoi d'un message générique
-        public async Task SendMessageAsync(string payload = null)
+        public async Task SendMessageAsync(MessageType messageType, string enveloppeJson = null)
         {
-            FileSerelizer fileSerelizer = new FileSerelizer();
+            var envelope = new
+            {
+                MessageType = (int)messageType,
+                SenderId = Guid.NewGuid().ToString(),
+                EnveloppeJson = enveloppeJson
+            };
+
             var message = new MqttApplicationMessageBuilder()
                 .WithTopic(topic)
-                .WithPayload(JsonConvert.SerializeObject(payload == null ? fileSerelizer.SerelizeCatalog(fileSerelizer.SerelizeFilesToTagLibFiles(GetMusicList(this.selectedFolderPath)), new GenericEnvelope(MessageType.ENVOIE_CATALOGUE,senderID)) : payload))
+                .WithPayload(JsonConvert.SerializeObject(envelope))
                 .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
                 .WithRetainFlag(false)
                 .Build();
 
             await mqttClient.PublishAsync(message);
             Console.WriteLine(message);
-            Debug.WriteLine(message);
-        }
+            Debug.WriteLine(message);   
+        }   
 
         // Envoyer un fichier
-        /*public async Task SendFileAsync(string fileName, string filePath)
+        public async Task SendFileAsync(string fileName, string filePath)
         {
-            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            byte[] fileBytes = File.ReadAllBytes(filePath);
             string fileData = Convert.ToBase64String(fileBytes);
 
             var fileEnvelope = new FileEnvelope
@@ -208,6 +205,6 @@ namespace BitRuisseau
             };
 
             await SendMessageAsync(MessageType.ENVOIE_FICHIER, JsonConvert.SerializeObject(fileEnvelope));
-        }*/
+        }
     }
 }

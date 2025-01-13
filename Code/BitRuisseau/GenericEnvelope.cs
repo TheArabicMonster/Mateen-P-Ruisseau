@@ -13,10 +13,5 @@ namespace BitRuisseau
         public string EnveloppeJson { get; set; }
         public string Sender { get; set; }
         public DateTime Timestamp { get; set; }
-        public GenericEnvelope(MessageType messageType, string senderID)
-        {
-            SenderId = senderID;
-            MessageType = messageType;
-        }
     }
 }
