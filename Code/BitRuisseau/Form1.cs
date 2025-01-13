@@ -14,17 +14,18 @@ namespace BitRuisseau
     {
         private FileSystemWatcher fileWatcher;
         private MqttHandler mqttHandler;
-        public static string selectedFolderPath;
+        public  string selectedFolderPath = $"../../../music";
         string broker = "mqtt.blue.section-inf.ch";
         int port = 1883;
         string topic = "test";
         string username = "ict";
         string password = "321";
+        private string senderID = Guid.NewGuid().ToString();
 
         public Form1()
         {
             InitializeComponent();
-            mqttHandler = new MqttHandler(broker, port, username, password, topic, selectedFolderPath);
+            mqttHandler = new MqttHandler(broker, port, username, password, topic, selectedFolderPath,senderID);
         }
 
         private async void Form1_Load(object sender, EventArgs e)
@@ -32,7 +33,7 @@ namespace BitRuisseau
             await mqttHandler.ConnectAsync();
         }
 
-        private async void button1_Click(object sender, EventArgs e)
+        public async void button1_Click(object sender, EventArgs e)
         {
             Debug.WriteLine("Button clicked!");
             folderBrowserDialog1.Description = "Veuillez sélectionner un dossier.";
@@ -48,7 +49,7 @@ namespace BitRuisseau
                 WatchFolder(selectedPath);
 
                 // Envoyer le catalogue
-                await mqttHandler.SendMessageAsync(MessageType.ENVOIE_CATALOGUE, MqttHandler.GetMusicList(selectedFolderPath));
+                await mqttHandler.SendMessageAsync();
             }
             else
             {
@@ -138,7 +139,7 @@ namespace BitRuisseau
                 username = configBroker.Username;
                 password = configBroker.Password;
 
-                mqttHandler = new MqttHandler(broker, port, username, password, topic, selectedFolderPath);
+                mqttHandler = new MqttHandler(broker, port, username, password, topic, selectedFolderPath, senderID);
                 mqttHandler.ConnectAsync();
             }
         }
@@ -152,7 +153,9 @@ namespace BitRuisseau
         {
             try
             {
-                await mqttHandler.SendMessageAsync(MessageType.DEMANDE_CATALOGUE);
+                FileSerelizer fileSerelizer = new FileSerelizer();
+                GenericEnvelope envelop = new GenericEnvelope(MessageType.DEMANDE_CATALOGUE, senderID);
+                await mqttHandler.SendMessageAsync(fileSerelizer.SerelizeMessageType1(envelop));
                 MessageBox.Show("Demande de catalogue envoyée avec succès.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
