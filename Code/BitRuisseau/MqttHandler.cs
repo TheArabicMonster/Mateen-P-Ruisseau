@@ -162,12 +162,20 @@ namespace BitRuisseau
         // Obtenir la liste des fichiers du catalogue
         public static string GetMusicList(string selectedFolderPath)
         {
-            var files = Directory.GetFiles(selectedFolderPath, "*.*", SearchOption.AllDirectories)
+            var mediaDatas = Directory.GetFiles(selectedFolderPath, "*.*", SearchOption.AllDirectories)
                 .Where(s => s.EndsWith(".mp3") || s.EndsWith(".mp4"))
-                .Select(Path.GetFileName)
-                .ToList();
+                .Select(filename => new FileInfo(filename))
+                .Select(fileInfo => new MediaData
+                {
+                    File_name = fileInfo.Name,
+                    File_size = fileInfo.Length,
+                    File_artist = fileInfo.LinkTarget,
+                    File_type = fileInfo.Extension,
+                    File_duration = "00:00:00"
+                });
+            var sendCatalog = new SendCatalog() { Content = mediaDatas.ToList() };
 
-            return JsonConvert.SerializeObject(files);
+            return JsonConvert.SerializeObject(sendCatalog);
         }
 
         // Envoi d'un message générique
