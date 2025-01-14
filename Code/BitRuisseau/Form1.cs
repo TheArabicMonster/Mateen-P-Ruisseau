@@ -14,7 +14,7 @@ namespace BitRuisseau
     {
         private FileSystemWatcher fileWatcher;
         private MqttHandler mqttHandler;
-        public static string selectedFolderPath;
+        public static string selectedFolderPath = @"C:\Users\chats\Creative Cloud Files\asset\music fond";
         string broker = "mqtt.blue.section-inf.ch";
         int port = 1883;
         string topic = "test";
@@ -46,9 +46,7 @@ namespace BitRuisseau
                 selectedFolderPath = selectedPath;
                 DisplayMedia(selectedPath);
                 WatchFolder(selectedPath);
-
-                // Envoyer le catalogue
-                await mqttHandler.SendMessageAsync(MessageType.ENVOIE_CATALOGUE, MqttHandler.GetMusicList(selectedFolderPath));
+                await mqttHandler.SendMusicCata(selectedPath);
             }
             else
             {
@@ -150,15 +148,7 @@ namespace BitRuisseau
 
         private async void button2_Click(object sender, EventArgs e)
         {
-            try
-            {
-                await mqttHandler.SendMessageAsync(MessageType.DEMANDE_CATALOGUE);
-                MessageBox.Show("Demande de catalogue envoyée avec succès.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erreur lors de l'envoi de la demande de catalogue : {ex.Message}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            await mqttHandler.SendMessageAsync(MessageType.DEMANDE_CATALOGUE);
         }
     }
 }

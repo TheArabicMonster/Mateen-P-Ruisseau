@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace BitRuisseau
 {
-    public class GenericEnvelope
+    public class Message
     {
+        public int MessageType { get; set; }
         public string SenderId { get; set; }
-        public MessageType MessageType { get; set; }
         public string EnveloppeJson { get; set; }
-        public string Sender { get; set; }
-        public DateTime Timestamp { get; set; }
+        public Enveloppe Content { get; set; }
     }
 }

@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace BitRuisseau
 {
-    public class FileEnvelope
+    public class Enveloppe
     {
-        public string FileName { get; set; }
-        public string FileData { get; set; }
+        public List<MediaData> Content { get; set; }
     }
 }
