@@ -14,7 +14,7 @@ namespace BitRuisseau
     {
         private FileSystemWatcher fileWatcher;
         private MqttHandler mqttHandler;
-        public static string selectedFolderPath = @"C:\Users\chats\Creative Cloud Files\asset\music fond";
+        public static string selectedFolderPath = "../../../musicFolder";
         string broker = "mqtt.blue.section-inf.ch";
         int port = 1883;
         string topic = "test";

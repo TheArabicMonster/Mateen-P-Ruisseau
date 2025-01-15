@@ -1,14 +1,9 @@
 using MQTTnet;
 using MQTTnet.Protocol;
 using Newtonsoft.Json;
-using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace BitRuisseau
 {
@@ -73,11 +68,11 @@ namespace BitRuisseau
             {
                 // Désérialiser le message reçu en un objet JSON
                 var envelope = JsonConvert.DeserializeObject<Message>(receivedMessage);
-                MessageBox.Show(envelope.MessageType.ToString());
+                //MessageBox.Show(envelope.MessageType.ToString());
                 // Gérer les différents types de messages reçus
-                
-                
-                if(envelope.MessageType == 0)
+
+
+                if (envelope.MessageType == 0)
                 {
                     HandleCatalogReceived(envelope.EnveloppeJson);
                 }
@@ -104,7 +99,7 @@ namespace BitRuisseau
         private void HandleCatalogReceived(string catalogJson)
         {
             var catalog = DeserializeEnevloppeJson(catalogJson);
-            
+
             mediaList = catalog.Content;
             //foreach (var media in catalog)
             //{
@@ -136,7 +131,7 @@ namespace BitRuisseau
 
             MessageBox.Show($"Fichier {fileName} téléchargé avec succès dans le répertoire : {selectedFolderPath}", "Téléchargement réussi", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-        
+
 
         // Traiter la demande de fichier spécifique
         private async void FileRequest(string fileRequestJson)
@@ -162,7 +157,7 @@ namespace BitRuisseau
             };
 
             string payload = System.Text.Json.JsonSerializer.Serialize(message, new JsonSerializerOptions { WriteIndented = true });
-            
+
             var mqttMessage = new MqttApplicationMessageBuilder()
             .WithTopic(topic)
             .WithPayload(payload)
@@ -299,7 +294,6 @@ namespace BitRuisseau
             Console.WriteLine(message);
             Debug.WriteLine(message);
         }
-
         public async Task SendFile(int type, string fileName)
         {
             try
@@ -344,7 +338,6 @@ namespace BitRuisseau
                 MessageBox.Show($"Erreur lors de l'envoi de la demande de fichier : {ex.Message}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
 
 
         // deserialaser un message
