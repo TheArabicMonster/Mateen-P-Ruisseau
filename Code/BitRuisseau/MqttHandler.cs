@@ -72,9 +72,10 @@ namespace BitRuisseau
                 MessageBox.Show(envelope.MessageType.ToString());
                 // Gérer les différents types de messages reçus
                 
+                
                 if(envelope.MessageType == 0)
                 {
-                    HandleCatalogReceived(receivedMessage);
+                    HandleCatalogReceived(envelope.EnveloppeJson);
                 }
                 else if (envelope.MessageType == 1)
                 {
@@ -82,11 +83,11 @@ namespace BitRuisseau
                 }
                 else if (envelope.MessageType == 2)
                 {
-                    HandleFileReceived(envelope.EnveloppeJson);
+                    HandleFileReceived(envelope.Content);
                 }
                 else if (envelope.MessageType == 3)
                 {
-                    FileRequest(envelope.EnveloppeJson);
+                    FileRequest(envelope.Content);
                 }
             }
             catch (Exception ex)
@@ -98,31 +99,30 @@ namespace BitRuisseau
         // Traiter le catalogue reçu (par exemple, afficher ou utiliser les fichiers dans le catalogue)
         private void HandleCatalogReceived(string catalogJson)
         {
-            var deserializedCatalog = DeserializeMessage(catalogJson);
-            var catalog = deserializedCatalog.Content.Content;
+            var catalog = DeserializeEnevloppeJson(catalogJson);
             var mediaList = new List<MediaData>();
-
-            foreach (var media in catalog)
-            {
-                Console.WriteLine($"File name: {media.File_name}");
-                Console.WriteLine($"File size: {media.File_size}");
-                Console.WriteLine($"File artist: {media.File_artist}");
-                Console.WriteLine($"File type: {media.File_type}");
-                Console.WriteLine($"File duration: {media.File_duration}");
-                Debug.WriteLine(media.File_name);
-                //stocker les musiques dans une liste pour les afficher dans le listBox
-                mediaList.Add(media);
-            }
+            mediaList = catalog.Content;
+            //foreach (var media in catalog)
+            //{
+            //    Console.WriteLine($"File name: {media.File_name}");
+            //    Console.WriteLine($"File size: {media.File_size}");
+            //    Console.WriteLine($"File artist: {media.File_artist}");
+            //    Console.WriteLine($"File type: {media.File_type}");
+            //    Console.WriteLine($"File duration: {media.File_duration}");
+            //    Debug.WriteLine(media.File_name);
+            //    //stocker les musiques dans une liste pour les afficher dans le listBox
+            //    mediaList.Add(media);
+            //}
         }
 
         // Traiter le fichier reçu (par exemple, enregistrer le fichier)
-        private void HandleFileReceived(string fileJson)
+        private void HandleFileReceived(Enveloppe fileJson)
         {
             
         }
 
         // Traiter la demande de fichier spécifique
-        private void FileRequest(string fileRequestJson)
+        private void FileRequest(Enveloppe fileRequestJson)
         {
             
         }
@@ -136,11 +136,11 @@ namespace BitRuisseau
             // Construire une liste des médias sous forme d'objets anonymes
             var cataList = mediaList.Select(media => new
             {
-                Title = media.File_name,
-                Artist = media.File_artist,
-                Type = media.File_type,
-                Size = media.File_size,
-                Duration = media.File_duration
+                Title = media.Title,
+                Artist = media.Artist,
+                Type = media.Type,
+                Size = media.Size,
+                Duration = media.Duration
             }).ToList();
 
             // Construire l'enveloppe contenant le catalogue
@@ -205,11 +205,11 @@ namespace BitRuisseau
 
                     MediaData media = new MediaData
                     {
-                        File_name = title,
-                        File_artist = artist,
-                        File_type = info.Extension.TrimStart('.'),
-                        File_size = info.Length,
-                        File_duration = duration
+                        Title = title,
+                        Artist = artist,
+                        Type = info.Extension.TrimStart('.'),
+                        Size = info.Length,
+                        Duration = duration
                     };
 
                     mediaList.Add(media);
@@ -255,6 +255,10 @@ namespace BitRuisseau
         public static Message DeserializeMessage(string message)
         {
             return JsonConvert.DeserializeObject<Message>(message);
+        }
+        public static Enveloppe DeserializeEnevloppeJson(string message)
+        {
+            return JsonConvert.DeserializeObject<Enveloppe>(message);
         }
     }
 }
