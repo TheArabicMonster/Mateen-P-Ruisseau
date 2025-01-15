@@ -205,6 +205,7 @@
             radioButton1.TabIndex = 8;
             radioButton1.TabStop = true;
             radioButton1.UseVisualStyleBackColor = false;
+            radioButton1.CheckedChanged += radioButton1_CheckedChanged;
             // 
             // radioButton2
             // 
@@ -216,6 +217,7 @@
             radioButton2.TabIndex = 9;
             radioButton2.TabStop = true;
             radioButton2.UseVisualStyleBackColor = false;
+            radioButton2.CheckedChanged += radioButton2_CheckedChanged;
             // 
             // pictureBox2
             // 

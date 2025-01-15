@@ -6,7 +6,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace BitRuisseau
 {
@@ -16,6 +18,8 @@ namespace BitRuisseau
         private MqttClientOptions options;
         private string topic;
         private string selectedFolderPath;
+        public List<MediaData> mediaList = new List<MediaData>();
+        private string clientId = Guid.NewGuid().ToString();
 
         public MqttHandler(string broker, int port, string username, string password, string topic, string selectedFolderPath)
         {
@@ -83,11 +87,11 @@ namespace BitRuisseau
                 }
                 else if (envelope.MessageType == 2)
                 {
-                    HandleFileReceived(envelope.Content);
+                    HandleFileReceived(envelope.EnveloppeJson);
                 }
                 else if (envelope.MessageType == 3)
                 {
-                    FileRequest(envelope.Content);
+                    FileRequest(envelope.EnveloppeJson);
                 }
             }
             catch (Exception ex)
@@ -100,7 +104,7 @@ namespace BitRuisseau
         private void HandleCatalogReceived(string catalogJson)
         {
             var catalog = DeserializeEnevloppeJson(catalogJson);
-            var mediaList = new List<MediaData>();
+            
             mediaList = catalog.Content;
             //foreach (var media in catalog)
             //{
@@ -116,15 +120,60 @@ namespace BitRuisseau
         }
 
         // Traiter le fichier reçu (par exemple, enregistrer le fichier)
-        private void HandleFileReceived(Enveloppe fileJson)
+        private void HandleFileReceived(string fileJson)
         {
-            
+            var envelope = JsonConvert.DeserializeObject<dynamic>(fileJson);
+
+            string fileBytes = envelope.Content;
+
+            byte[] file = Convert.FromBase64String(fileBytes);
+
+            string fileName = envelope.Content[0].Title.ToString();
+
+            string filePath = Path.Combine(selectedFolderPath, fileName);
+
+            File.WriteAllBytes(filePath, file);
+
+            MessageBox.Show($"Fichier {fileName} téléchargé avec succès dans le répertoire : {selectedFolderPath}", "Téléchargement réussi", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+        
 
         // Traiter la demande de fichier spécifique
-        private void FileRequest(Enveloppe fileRequestJson)
+        private async void FileRequest(string fileRequestJson)
         {
+            var deserializedMessage = DeserializeMessage(fileRequestJson);
+
+            string fileName = deserializedMessage.Content.Content[0].Title;
+            string filePath = Path.Combine(selectedFolderPath, fileName);
+            byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
+            string encodedBytes = Convert.ToBase64String(fileBytes);
+
+            var envelope = new
+            {
+                Content = encodedBytes
+            };
+            string envelopeJson = System.Text.Json.JsonSerializer.Serialize(envelope, new JsonSerializerOptions { WriteIndented = true });
+
+            var message = new
+            {
+                MessageType = 2,
+                SenderId = clientId,
+                EnveloppeJson = envelopeJson
+            };
+
+            string payload = System.Text.Json.JsonSerializer.Serialize(message, new JsonSerializerOptions { WriteIndented = true });
             
+            var mqttMessage = new MqttApplicationMessageBuilder()
+            .WithTopic(topic)
+            .WithPayload(payload)
+            .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+            .WithRetainFlag(false)
+            .Build();
+
+            await mqttClient.PublishAsync(mqttMessage);
+
+            MessageBox.Show($"Fichier \"{fileName}\" envoyé avec succès.", "Envoi réussi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
         }
 
         // Envoyer un fichier
@@ -250,6 +299,53 @@ namespace BitRuisseau
             Console.WriteLine(message);
             Debug.WriteLine(message);
         }
+
+        public async Task SendFile(int type, string fileName)
+        {
+            try
+            {
+                // Créer le contenu du message
+                var title = new
+                {
+                    Title = fileName
+                };
+
+                var titleList = new List<dynamic> { title };
+
+                var envelope = new
+                {
+                    Content = titleList.ToArray()
+                };
+
+                var envelopetoJson = System.Text.Json.JsonSerializer.Serialize(envelope, new JsonSerializerOptions { WriteIndented = true });
+
+                var templateMessage = new
+                {
+                    MessageType = type,  // Type 3 pour la demande de fichier
+                    SenderId = options.ClientId, // Utilise le clientId défini lors de la connexion
+                    EnveloppeJson = envelopetoJson
+                };
+
+                string payload = System.Text.Json.JsonSerializer.Serialize(templateMessage, new JsonSerializerOptions { WriteIndented = true });
+
+                // Créer et envoyer le message MQTT
+                var mqttMessage = new MqttApplicationMessageBuilder()
+                    .WithTopic(topic)
+                    .WithPayload(payload)
+                    .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+                    .WithRetainFlag(false)
+                    .Build();
+
+                await mqttClient.PublishAsync(mqttMessage);
+                Console.WriteLine("Message de demande de fichier envoyé avec succès.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de l'envoi de la demande de fichier : {ex.Message}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
 
         // deserialaser un message
         public static Message DeserializeMessage(string message)

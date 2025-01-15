@@ -25,11 +25,35 @@ namespace BitRuisseau
         {
             InitializeComponent();
             mqttHandler = new MqttHandler(broker, port, username, password, topic, selectedFolderPath);
+
+            radioButton1.CheckedChanged += RadioButton_CheckedChanged;
+            radioButton2.CheckedChanged += RadioButton_CheckedChanged;
         }
 
         private async void Form1_Load(object sender, EventArgs e)
         {
             await mqttHandler.ConnectAsync();
+        }
+        private void RadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton1.Checked)
+            {
+                DisplayMQTTCatalogFiles();
+            }
+            else if (radioButton2.Checked)
+            {
+                DisplayMedia(selectedFolderPath);
+            }
+        }
+
+        private void DisplayMQTTCatalogFiles()
+        {
+            listBox1.Items.Clear();
+
+            foreach (var file in mqttHandler.mediaList)
+            {
+                listBox1.Items.Add(file.Title);
+            }
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -111,10 +135,6 @@ namespace BitRuisseau
             }
         }
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
@@ -146,9 +166,35 @@ namespace BitRuisseau
 
         }
 
+        private async void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(listBox1.SelectedItems != null)
+            {
+                string selectedFile = listBox1.SelectedItem.ToString();
+
+                string title = Path.GetFileNameWithoutExtension(selectedFile);
+                string type = Path.GetExtension(selectedFile);
+
+                string filename = title + type;
+
+                await mqttHandler.SendFile(3, filename);
+
+            }
+        }
+
         private async void button2_Click(object sender, EventArgs e)
         {
             await mqttHandler.SendMessageAsync(MessageType.DEMANDE_CATALOGUE);
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            DisplayMQTTCatalogFiles();
         }
     }
 }
