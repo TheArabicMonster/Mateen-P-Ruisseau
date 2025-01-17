@@ -90,7 +90,7 @@
             label2.AutoSize = true;
             label2.BackColor = Color.Transparent;
             label2.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold);
-            label2.ForeColor = Color.Bisque;
+            label2.ForeColor = Color.LightSeaGreen;
             label2.Location = new Point(5, 47);
             label2.Name = "label2";
             label2.Size = new Size(123, 16);
@@ -102,7 +102,7 @@
             label4.AutoSize = true;
             label4.BackColor = Color.Transparent;
             label4.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold);
-            label4.ForeColor = Color.Bisque;
+            label4.ForeColor = Color.OrangeRed;
             label4.Location = new Point(46, 74);
             label4.Name = "label4";
             label4.Size = new Size(77, 16);
